@@ -1,0 +1,16 @@
+#!/bin/bash
+# Device (e.g. Nothing Phone (1):sm7325-nothing-spacewar)
+DEVICE="devicename:soc-vendor-codename"
+ARCH="arm64"
+
+# Repositories and branches
+declare -A REPOS=(
+	["KERNEL"]="https://github.com/torvalds/linux master"
+	["FIRMWARE"]="https://github.com/quic/upstream-wifi-fw main"
+	["ALSAUCM"]="https://github.com/alsa-project/alsa-ucm-conf master"
+)
+DEFCONFIG="defconfig"
+CMDLINE="console=tty0 root=PARTLABEL=linux"
+
+# Maintainer
+MAINTAINER="Alt Mobile <fix@me>"

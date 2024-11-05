@@ -1,0 +1,12 @@
+/build/
+/cache/
+/alsa*
+/firmware*
+/linux*
+/rootfs.*
+deviceinfo
+*.img
+*.img.xz
+*.patch
+*.rpm
+*.tar.gz
