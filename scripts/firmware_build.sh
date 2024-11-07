@@ -16,8 +16,8 @@ mkdir -p ${CACHE_DIR}
 git_clone FIRMWARE "${CACHE_DIR}/${FOLDER_NAME}"
 
 # Clean the build directory
-rm -rf "${FIRMWARE_PACKAGE_DIR}"
-mkdir -p "${FIRMWARE_PACKAGE_DIR}"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+rm -rf "${FIRMWARE_PKG_DIR}"
+mkdir -p "${FIRMWARE_PKG_DIR}"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 
 echo \
 "Name: ${PKG_NAME}
@@ -41,20 +41,20 @@ tar xf %SOURCE0 -C %buildroot
 %changelog
 * $(LANG= date +"%a %b %d %Y") ${MAINTAINER} - 1.0-alt1
 - Initial package
-" > "${FIRMWARE_PACKAGE_DIR}"/SPECS/${PKG_NAME}.spec
+" > "${FIRMWARE_PKG_DIR}"/SPECS/${PKG_NAME}.spec
 
 # Check if the files exist and copy them
 if [ -d "${FIRMWARE_DIR}/lib" ]; then
-	cp -r ${FIRMWARE_DIR}/* "${FIRMWARE_PACKAGE_DIR}"/SOURCES/
+	cp -r ${FIRMWARE_DIR}/* "${FIRMWARE_PKG_DIR}"/SOURCES/
 else
 	echo "Firmware not found."
 	exit 1
 fi
 
-cd "${FIRMWARE_PACKAGE_DIR}/SOURCES"
+cd "${FIRMWARE_PKG_DIR}/SOURCES"
 tar -czf "${PKG_NAME}-${PKG_VERSION}.tar.gz" *
-cd "${FIRMWARE_PACKAGE_DIR}"
+cd "${FIRMWARE_PKG_DIR}"
 
-rpmbuild --target $ARCH --define "_topdir "${FIRMWARE_PACKAGE_DIR}"" -bb "${FIRMWARE_PACKAGE_DIR}"/SPECS/${PKG_NAME}.spec
-cp "${FIRMWARE_PACKAGE_DIR}"/RPMS/*/*.rpm "${PACKAGES_DIR}"
+rpmbuild --target $ARCH --define "_topdir "${FIRMWARE_PKG_DIR}"" -bb "${FIRMWARE_PKG_DIR}"/SPECS/${PKG_NAME}.spec
+cp "${FIRMWARE_PKG_DIR}"/RPMS/*/*.rpm "${PACKAGES_DIR}"
 

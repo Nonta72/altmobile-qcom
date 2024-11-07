@@ -11,8 +11,8 @@ remove_efi_part() {
 
 	# Create loop devices
 	{
-	  read -r _ _ EFI_PARTITION_LOOP _  # first line:  read third word into part_fat32
-	  read -r _ _ ROOTFS_PARTITION_LOOP _   # second line: read third word into part_ntfs
+		read -r _ _ EFI_PARTITION_LOOP _  # first line:  read third word into part_fat32
+		read -r _ _ ROOTFS_PARTITION_LOOP _   # second line: read third word into part_ntfs
 	} < <(sudo kpartx -asv "${IMAGE_PATH}")
 
 	# Check if the EFI partition (assumed to be partition 1) exists

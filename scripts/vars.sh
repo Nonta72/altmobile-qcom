@@ -16,8 +16,8 @@ BUILD_DIR="${WORK_DIR}/build"
 PACKAGES_DIR="${BUILD_DIR}/packages"
 
 # Output directories
-KERNEL_PACKAGE_DIR="${BUILD_DIR}/linux-${VENDOR}-${CODENAME}"
-FIRMWARE_PACKAGE_DIR="${BUILD_DIR}/firmware-${VENDOR}-${CODENAME}"
-BOOT_DIR="${KERNEL_PACKAGE_DIR}/boot"
+KERNEL_PKG_DIR="${BUILD_DIR}/linux-${VENDOR}-${CODENAME}"
+FIRMWARE_PKG_DIR="${BUILD_DIR}/firmware-${VENDOR}-${CODENAME}"
+BOOT_DIR="${KERNEL_PKG_DIR}/boot"
 
 ALT_URL="https://beta.altlinux.org/mobile/sisyphus/latest/"
