@@ -7,32 +7,36 @@ source ./scripts/vars.sh
 remove_efi_part() {
 	local IMAGE_PATH="$1"
 
+	echo "Checking if the image has EFI partition..."
+
+	# Create loop devices
+	{
+	  read -r _ _ EFI_PARTITION_LOOP _  # first line:  read third word into part_fat32
+	  read -r _ _ ROOTFS_PARTITION_LOOP _   # second line: read third word into part_ntfs
+	} < <(sudo kpartx -asv "${IMAGE_PATH}")
+
 	# Check if the EFI partition (assumed to be partition 1) exists
-	if ! parted -ms "$IMAGE_PATH" print | grep -q "^1:"; then
+	if [ -z "${ROOTFS_PARTITION_LOOP}" ]; then
 		echo "EFI partition has already been deleted or not found."
 		return 0
 	fi
 
-	# Get START_BYTE and END_BYTE of partition 2 (assuming it's the Linux partition)
-	local PART_INFO=$(parted -ms "$IMAGE_PATH" unit B print)
-	local START_BYTE=$(echo "$PART_INFO" | awk -F: '/^2:/ {print substr($2, 1, length($2)-1)}')
-	local END_BYTE=$(echo "$PART_INFO" | awk -F: '/^2:/ {print substr($3, 1, length($3)-1)}')
+	# A temporary file for the rootfs image
+	local TEMP_IMAGE_PATH="${IMAGE_PATH%.img}-rootfs.img"
 
-	# Validate extracted values
-	if [ -z "$START_BYTE" ] || [ -z "$END_BYTE" ]; then
-		echo "Error: Failed to get partition byte information." && exit 1
+	# Copy the root partition to this temporary file
+	if [ -b "/dev/mapper/${ROOTFS_PARTITION_LOOP}" ]; then
+		sudo sh -c "cat "/dev/mapper/${ROOTFS_PARTITION_LOOP}" > "${TEMP_IMAGE_PATH}""
+		sudo kpartx -d "${IMAGE_PATH}"
+	else
+		echo "Error: could not remove efi partition. $(file "/dev/mapper/${ROOTFS_PARTITION_LOOP}")."
+		ls "/dev/mapper/${ROOTFS_PARTITION_LOOP}"
+		sudo kpartx -d "${IMAGE_PATH}"
+		return 1
 	fi
 
-	local SIZE_BYTES=$((END_BYTE - START_BYTE))
-
-	# Create a temporary file for the trimmed image
-	local TEMP_IMAGE="${IMAGE_PATH%.img}-trimmed.img"
-
-	# Copy the required bytes using tail and head
-	tail -c +"$((START_BYTE + 1))" "$IMAGE_PATH" | head -c "$SIZE_BYTES" > "$TEMP_IMAGE"
-
-	# Replace the original image with a trimmed one
-	mv "$TEMP_IMAGE" "$IMAGE_PATH"
+	# Replace the original image with the rootfs image
+	mv "$TEMP_IMAGE_PATH" "$IMAGE_PATH"
 	echo "EFI partition removed. Image saved as '$IMAGE_PATH'"
 }
 
@@ -46,36 +50,28 @@ get_alt_image() {
 	if [ -f "$CACHE_DIR/$EXTRACTED_IMAGE" ]; then
 		echo "Extracted file '$EXTRACTED_IMAGE' already exists."
 		echo "Remove it manually if you want to overwrite."
-
-		# Try to remove the EFI partition
-		remove_efi_part "$CACHE_DIR/$EXTRACTED_IMAGE"
-
-		return 0
-	fi
-
-	# Check if compressed image exists
-	if [ -f "$CACHE_DIR/$LATEST_IMAGE" ]; then
-		echo "File '$LATEST_IMAGE' is already downloaded, starting extraction..."
-		unxz -k "$CACHE_DIR/$LATEST_IMAGE" || { echo "Extraction failed"; exit 1; }
-		echo "Extraction completed: '$EXTRACTED_IMAGE'"
 	else
-		# Download the image if it does not exist
-		echo "Downloading latest image: ${ALT_URL}${LATEST_IMAGE}"
-		curl -o "${CACHE_DIR}/${LATEST_IMAGE}" \
-			"${ALT_URL}${LATEST_IMAGE}" || { echo "Download failed"; exit 1; }
-
-		# Extract the downloaded file
-		echo "Starting extraction: '$LATEST_IMAGE'"
-		unxz -k "$CACHE_DIR/$LATEST_IMAGE" || { echo "Extraction failed"; exit 1; }
-		echo "Extraction completed: '$EXTRACTED_IMAGE'"
-
-		# Remove the compressed archive after successful extraction
-		rm "$CACHE_DIR/$LATEST_IMAGE"
-		echo "Compressed file '$LATEST_IMAGE' has been removed after extraction."
-
-		# Try to remove the EFI partition
-		remove_efi_part "$CACHE_DIR/$EXTRACTED_IMAGE"
+		# Check if compressed image exists
+		if [ -f "$CACHE_DIR/$LATEST_IMAGE" ]; then
+			echo "File '$LATEST_IMAGE' is already downloaded"
+		else
+			# Download the image if it does not exist
+			echo "Downloading latest image: ${ALT_URL}${LATEST_IMAGE}"
+			curl -o "${CACHE_DIR}/${LATEST_IMAGE}" \
+				"${ALT_URL}${LATEST_IMAGE}" || { echo "Download failed"; exit 1; }
+		fi
+		# Extract the image
+		extract_image "$CACHE_DIR/$LATEST_IMAGE"
 	fi
+
+	# Try to remove the EFI partition
+	remove_efi_part "$CACHE_DIR/$EXTRACTED_IMAGE"
+}
+
+extract_image() {
+	echo "Starting extraction: '$1'"
+	unxz "$1" || { echo "Extraction failed"; exit 1; }
+	echo "Extraction completed: ${LATEST_IMAGE%.xz}"
 }
 
 # Make boot.img func
