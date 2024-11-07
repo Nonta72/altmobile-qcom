@@ -13,7 +13,7 @@ FIRMWARE_DIR=${CACHE_DIR}/${PKG_NAME}
 
 # Clone the firmware repository
 mkdir -p ${CACHE_DIR}
-git_clone FIRMWARE "${CACHE_DIR}/${FOLDER_NAME}"
+git_clone FIRMWARE "${CACHE_DIR}/${PKG_NAME}"
 
 # Clean the build directory
 rm -rf "${FIRMWARE_PKG_DIR}"
@@ -56,5 +56,6 @@ tar -czf "${PKG_NAME}-${PKG_VERSION}.tar.gz" *
 cd "${FIRMWARE_PKG_DIR}"
 
 rpmbuild --target $ARCH --define "_topdir "${FIRMWARE_PKG_DIR}"" -bb "${FIRMWARE_PKG_DIR}"/SPECS/${PKG_NAME}.spec
+rm -f ${PACKAGES_DIR}/firmware-*.noarch.rpm
 cp "${FIRMWARE_PKG_DIR}"/RPMS/*/*.rpm "${PACKAGES_DIR}"
 

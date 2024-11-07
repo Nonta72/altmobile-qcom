@@ -44,7 +44,7 @@ remove_efi_part() {
 get_alt_image() {
 	local LATEST_IMAGE=$(curl -s "$ALT_URL" | grep -oP \
 	'alt-mobile-phosh-un-def-\d{8}-aarch64\.img\.xz' | sort -r | head -n 1)
-	local EXTRACTED_IMAGE="${LATEST_IMAGE%.xz}"
+	EXTRACTED_IMAGE="${LATEST_IMAGE%.xz}"
 
 	# Check if the extracted image already exists
 	if [ -f "$CACHE_DIR/$EXTRACTED_IMAGE" ]; then

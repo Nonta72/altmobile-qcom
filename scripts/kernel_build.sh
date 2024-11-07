@@ -26,5 +26,6 @@ make_boot_img ${KERNEL_OUTPUT}
 rm -rf ${KERNEL_OUTPUT}/rpmbuild/RPMS/
 make $MAKEPROPS rpm-pkg
 mkdir -p "${PACKAGES_DIR}"
+rm -f ${PACKAGES_DIR}/kernel-*.aarch64.rpm
 cp ${KERNEL_OUTPUT}/rpmbuild/RPMS/*/*.rpm "${PACKAGES_DIR}"
 
