@@ -106,7 +106,7 @@ make_boot_img() {
 		--tags_offset 0x100		\
 		--pagesize 4096			\
 		--header_version 2		\
-		-o ${PACKAGES_DIR}/boot.img	\
+		-o ${WORK_DIR}/boot.img	\
 		|| echo "Failed to make boot.img"
 }
 
