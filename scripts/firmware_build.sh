@@ -36,7 +36,8 @@ mkdir -p %{buildroot}/lib/firmware
 tar xf %SOURCE0 -C %buildroot
 
 %files
-/lib/firmware/*
+/lib/*
+/usr/*
 
 %changelog
 * $(LANG= date +"%a %b %d %Y") ${MAINTAINER} - 1.0-alt1
