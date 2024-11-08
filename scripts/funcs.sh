@@ -62,26 +62,26 @@ get_alt_image() {
 	EXTRACTED_IMAGE="${LATEST_IMAGE%.xz}"
 
 	# Check if the extracted image already exists
-	if [ -f "${CACHE_DIR}/${EXTRACTED_IMAGE}" ]; then
+	if [ -f "${WORK_DIR}/${EXTRACTED_IMAGE}" ]; then
 		echo "Extracted file '${EXTRACTED_IMAGE}' already exists."
 		echo "Remove it manually if you want to overwrite."
 	else
 		# Check if compressed image exists
-		if [ -f "${CACHE_DIR}/${LATEST_IMAGE}" ]; then
+		if [ -f "${WORK_DIR}/${LATEST_IMAGE}" ]; then
 			echo "File '${LATEST_IMAGE}' is already downloaded."
 		else
 			# Download the image if it does not exist
 			echo "Downloading latest image: ${ALT_URL}${LATEST_IMAGE}"
-			curl -f -o "${CACHE_DIR}/${LATEST_IMAGE}"	\
+			curl -f -o "${WORK_DIR}/${LATEST_IMAGE}"	\
 				"${ALT_URL}${LATEST_IMAGE}" ||		\
 				{ echo "Download failed"; exit 1; }
 		fi
 		# Extract the image
-		extract_image "${CACHE_DIR}/${LATEST_IMAGE}"
+		extract_image "${WORK_DIR}/${LATEST_IMAGE}"
 	fi
 
 	# Try to remove the EFI partition
-	remove_efi_part "${CACHE_DIR}/${EXTRACTED_IMAGE}"
+	remove_efi_part "${WORK_DIR}/${EXTRACTED_IMAGE}"
 }
 
 extract_image() {

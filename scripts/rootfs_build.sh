@@ -19,7 +19,7 @@ mkdir -p "${ROOTDIR}"
 
 # Mount the image
 sudo umount "${ROOTDIR}" > /dev/null || true
-sudo mount "${CACHE_DIR}/${EXTRACTED_IMAGE}" "${ROOTDIR}" \
+sudo mount "${WORK_DIR}/${EXTRACTED_IMAGE}" "${ROOTDIR}" \
 			|| echo "Failed to mount ${EXTRACTED_IMAGE} image"
 
 # Replace fstab
