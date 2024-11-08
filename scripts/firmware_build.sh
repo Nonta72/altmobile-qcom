@@ -52,7 +52,8 @@ EOF
 if [ -d "${FIRMWARE_DIR}/lib" ]; then
 	cp -r "${FIRMWARE_DIR}/"* "${FIRMWARE_PKG_DIR}/SOURCES/"
 else
-	echo "Firmware not found." && exit 1
+	echo "Firmware not found in ${FIRMWARE_DIR}"
+	exit 1
 fi
 
 cd "${FIRMWARE_PKG_DIR}/SOURCES"
