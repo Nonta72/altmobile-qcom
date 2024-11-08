@@ -15,9 +15,9 @@ sudo mount -o loop "${CACHE_DIR}/${EXTRACTED_IMAGE}" "${CACHE_DIR}/rootdir" \
 
 # FSTAB
 sudo sed -i -e '/\/boot\/efi/d' \
-	-e '/^[^ \t]*[ \t]*\/[ \t]/ c\
-PARTLABEL=linux / ext4 errors=remount-ro,x-systemd.growfs 1 1' \
-		${CACHE_DIR}/rootdir/etc/fstab || echo "Failed to edit fstab"
+	-e "/^[^ \t]*[ \t]*\/[ \t]/ c\
+PARTLABEL=${PARTLABEL} / ext4 errors=remount-ro,x-systemd.growfs 1 1" \
+	"${CACHE_DIR}/rootdir/etc/fstab" || echo "Failed to edit fstab"
 
 # Install packages
 sudo rpm --root "${CACHE_DIR}/rootdir" --ignorearch --nodeps -i	\

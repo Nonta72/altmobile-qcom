@@ -2,6 +2,8 @@
 # Device (e.g. Nothing Phone (1):sm7325-nothing-spacewar)
 DEVICE="devicename:soc-vendor-codename"
 ARCH="arm64"
+# Partition for rootfs (linux or userdata is recommended)
+PARTLABEL="linux"
 
 # Repositories and branches
 declare -A REPOS=(
@@ -10,7 +12,7 @@ declare -A REPOS=(
 	["ALSAUCM"]="https://github.com/alsa-project/alsa-ucm-conf master"
 )
 DEFCONFIG="defconfig"
-CMDLINE="console=tty0 root=PARTLABEL=linux"
+CMDLINE="console=tty0 root=PARTLABEL=${PARTLABEL}"
 
 # Maintainer
 MAINTAINER="Alt Mobile <fix@me>"
