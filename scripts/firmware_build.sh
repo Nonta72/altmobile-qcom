@@ -32,7 +32,6 @@ Release: alt1
 Summary: Firmware for ${DEVICE_NAME}
 License: Distributable
 Source: %{name}-%{version}.tar.gz
-BuildArch: noarch
 
 %description
 %summary
@@ -63,6 +62,6 @@ cd "${FIRMWARE_PKG_DIR}"
 
 rpmbuild --target "${ARCH}" --define "_topdir ${FIRMWARE_PKG_DIR}" \
 			-bb "${FIRMWARE_PKG_DIR}/SPECS/${PKG_NAME}.spec"
-rm -f ${PACKAGES_DIR}/firmware-*.noarch.rpm
+rm -f ${PACKAGES_DIR}/firmware-*.arm64.rpm
 cp "${FIRMWARE_PKG_DIR}/RPMS/"*/*.rpm "${PACKAGES_DIR}"
 echo "Firmware package build done."
