@@ -1,71 +1,87 @@
 #!/bin/bash
 # Copyright (c) 2024, Danila Tikhonov <danila@jiaxyga.com>
+# Copyright (c) 2024, Victor Paul <vipollmail@gmail.com>
 
-source ./scripts/vars.sh
+SCRIPTS_DIR="$(readlink -f "$(dirname $0)")"
+source "${SCRIPTS_DIR}/vars.sh"
 
 # Remove EFI partition
 remove_efi_part() {
+	echo "Trying to remove EFI partition from the image..."
+
 	local IMAGE_PATH="$1"
 
-	echo "Checking if the image has EFI partition..."
+	echo "Root is needed to create loop devices"
+	# Create loop devices and capture output
+	local kpartx_output
+	if ! kpartx_output=$(sudo kpartx -asv "${IMAGE_PATH}"); then
+		echo "Error: Failed to create loop devices with kpartx."
+		return 1
+	fi
 
-	# Create loop devices
-	{
-		read -r _ _ EFI_PARTITION_LOOP _  # first line:  read third word into part_fat32
-		read -r _ _ ROOTFS_PARTITION_LOOP _   # second line: read third word into part_ntfs
-	} < <(sudo kpartx -asv "${IMAGE_PATH}")
+	# Parse the loop device names
+	local loop_devices=()
+	while IFS= read -r line; do
+		if [[ $line =~ add\ map\ ([^[:space:]]+) ]]; then
+			loop_devices+=("/dev/mapper/${BASH_REMATCH[1]}")
+		fi
+	done <<< "${kpartx_output}"
 
-	# Check if the EFI partition (assumed to be partition 1) exists
-	if [ -z "${ROOTFS_PARTITION_LOOP}" ]; then
+	if [ "${#loop_devices[@]}" -lt 2 ]; then
 		echo "EFI partition has already been deleted or not found."
+		sudo kpartx -dv "${IMAGE_PATH}"
 		return 0
 	fi
 
-	# A temporary file for the rootfs image
+	local ROOTFS_PARTITION_LOOP="${loop_devices[1]}"
+
+	# Temporary file for the rootfs image
 	local TEMP_IMAGE_PATH="${IMAGE_PATH%.img}-rootfs.img"
 
 	# Copy the root partition to this temporary file
-	if [ -b "/dev/mapper/${ROOTFS_PARTITION_LOOP}" ]; then
-		sudo sh -c "cat "/dev/mapper/${ROOTFS_PARTITION_LOOP}" > "${TEMP_IMAGE_PATH}""
-		sudo kpartx -d "${IMAGE_PATH}"
+	if [ -b "${ROOTFS_PARTITION_LOOP}" ]; then
+		sudo dd if="${ROOTFS_PARTITION_LOOP}" \
+				of="${TEMP_IMAGE_PATH}" bs=1M status=progress
+		sudo kpartx -dv "${IMAGE_PATH}"
 	else
-		echo "Error: could not remove efi partition. $(file "/dev/mapper/${ROOTFS_PARTITION_LOOP}")."
-		ls "/dev/mapper/${ROOTFS_PARTITION_LOOP}"
-		sudo kpartx -d "${IMAGE_PATH}"
+		echo "Error: Could not remove EFI partition. Device ${ROOTFS_PARTITION_LOOP} not found."
+		sudo kpartx -dv "${IMAGE_PATH}"
 		return 1
 	fi
 
 	# Replace the original image with the rootfs image
-	mv "$TEMP_IMAGE_PATH" "$IMAGE_PATH"
-	echo "EFI partition removed. Image saved as '$IMAGE_PATH'"
+	mv "${TEMP_IMAGE_PATH}" "${IMAGE_PATH}"
+	echo "EFI partition removed. Image saved as '${IMAGE_PATH}'"
 }
 
-# Get alt image func
+# Get ALT image function
 get_alt_image() {
-	local LATEST_IMAGE=$(curl -s "$ALT_URL" | grep -oP \
-	'alt-mobile-phosh-un-def-\d{8}-aarch64\.img\.xz' | sort -r | head -n 1)
+	local LATEST_IMAGE=$(curl -s "${ALT_URL}" | grep -oP	\
+	'alt-mobile-phosh-un-def-\d{8}-aarch64\.img\.xz'	\
+	| sort -r | head -n 1)
 	EXTRACTED_IMAGE="${LATEST_IMAGE%.xz}"
 
 	# Check if the extracted image already exists
-	if [ -f "$CACHE_DIR/$EXTRACTED_IMAGE" ]; then
-		echo "Extracted file '$EXTRACTED_IMAGE' already exists."
+	if [ -f "${CACHE_DIR}/${EXTRACTED_IMAGE}" ]; then
+		echo "Extracted file '${EXTRACTED_IMAGE}' already exists."
 		echo "Remove it manually if you want to overwrite."
 	else
 		# Check if compressed image exists
-		if [ -f "$CACHE_DIR/$LATEST_IMAGE" ]; then
-			echo "File '$LATEST_IMAGE' is already downloaded"
+		if [ -f "${CACHE_DIR}/${LATEST_IMAGE}" ]; then
+			echo "File '${LATEST_IMAGE}' is already downloaded."
 		else
 			# Download the image if it does not exist
 			echo "Downloading latest image: ${ALT_URL}${LATEST_IMAGE}"
-			curl -o "${CACHE_DIR}/${LATEST_IMAGE}" \
-				"${ALT_URL}${LATEST_IMAGE}" || { echo "Download failed"; exit 1; }
+			curl -f -o "${CACHE_DIR}/${LATEST_IMAGE}"	\
+				"${ALT_URL}${LATEST_IMAGE}" ||		\
+				{ echo "Download failed"; exit 1; }
 		fi
 		# Extract the image
-		extract_image "$CACHE_DIR/$LATEST_IMAGE"
+		extract_image "${CACHE_DIR}/${LATEST_IMAGE}"
 	fi
 
 	# Try to remove the EFI partition
-	remove_efi_part "$CACHE_DIR/$EXTRACTED_IMAGE"
+	remove_efi_part "${CACHE_DIR}/${EXTRACTED_IMAGE}"
 }
 
 extract_image() {
@@ -78,7 +94,7 @@ extract_image() {
 make_boot_img() {
 	local IMAGE_PATH DTB_PATH
 	IMAGE_PATH="$1/arch/arm64/boot/Image.gz"
-	DTB_PATH="$1/arch/arm64/boot/dts/qcom/$SOC-${VENDOR}-${CODENAME}.dtb"
+	DTB_PATH="$1/arch/arm64/boot/dts/qcom/${SOC}-${VENDOR}-${CODENAME}.dtb"
 
 	mkbootimg \
 		--kernel ${IMAGE_PATH}		\
@@ -103,10 +119,10 @@ git_clone() {
 
 	# Check if directory exists
 	if [ -d "$REPO_DIR" ]; then
-		echo "Directory '$REPO_DIR' is already exists."
+		echo "Directory '${REPO_DIR}' already exists."
 		echo "Remove it manually to re-clone."
 	else
-		git clone -b "$BRANCH" "$REPO_URL" "$REPO_DIR" \
+		git clone -b "${BRANCH}" "${REPO_URL}" "${REPO_DIR}" \
 			--depth 1 || { echo "Failed to clone $1"; exit 1; }
 	fi
 }
