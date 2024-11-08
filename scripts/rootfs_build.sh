@@ -22,12 +22,10 @@ sudo umount "${ROOTDIR}" > /dev/null || true
 sudo mount "${CACHE_DIR}/${EXTRACTED_IMAGE}" "${ROOTDIR}" \
 			|| echo "Failed to mount ${EXTRACTED_IMAGE} image"
 
-# Modify fstab
-# TODO: Just replace fstab?
-sudo sed -i -e '/\/boot\/efi/d' \
-	-e "/^[^ \t]*[ \t]*\/[ \t]/ c\
-PARTLABEL=${PARTLABEL} / ext4 errors=remount-ro,x-systemd.growfs 1 1" \
-	"${CACHE_DIR}/rootdir/etc/fstab" || echo "Failed to modify fstab"
+# Replace fstab
+PARTLABEL="${PARTLABEL}" envsubst < "${SRC_DIR}/fstab" \
+			| sudo tee "${ROOTDIR}/etc/fstab" > /dev/null \
+			|| echo "Failed to replace /etc/fstab"
 
 # Install packages
 if ls "${PACKAGES_DIR}"/*.rpm 1> /dev/null 2>&1; then

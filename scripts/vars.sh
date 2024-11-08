@@ -22,8 +22,9 @@ IFS='-' read -r SOC VENDOR CODENAME <<< "${DEVICE}"
 
 # Directories
 WORK_DIR=$(readlink -f "$(dirname $0)/..")
-CACHE_DIR="${WORK_DIR}/cache"
 BUILD_DIR="${WORK_DIR}/build"
+CACHE_DIR="${WORK_DIR}/cache"
+SRC_DIR="${WORK_DIR}/src"
 PACKAGES_DIR="${BUILD_DIR}/packages"
 
 # Output directories

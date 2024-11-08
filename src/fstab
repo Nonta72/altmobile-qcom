@@ -1,0 +1,5 @@
+# /etc/fstab
+proc			/proc		proc	nosuid,noexec,gid=proc				0 0
+devpts			/dev/pts	devpts	nosuid,noexec,gid=tty,mode=620,ptmxmode=0666	0 0
+tmpfs			/tmp		tmpfs	nosuid						0 0
+PARTLABEL=${PARTLABEL}	/		ext4	defaults,x-systemd.growfs			1 1
