@@ -27,6 +27,12 @@ PARTLABEL="${PARTLABEL}" envsubst < "${SRC_DIR}/fstab" \
 			| sudo tee "${ROOTDIR}/etc/fstab" > /dev/null \
 			|| echo "Failed to replace /etc/fstab"
 
+# Install a custom ALSA Use Case Manager configuration
+FOLDER_NAME="alsa-${VENDOR}-${CODENAME}-git"
+git_clone "ALSAUCM" "${CACHE_DIR}/${FOLDER_NAME}"
+
+sudo cp -r "${CACHE_DIR}/${FOLDER_NAME}"/{ucm,ucm2} "${ROOTDIR}/usr/share/alsa"
+
 # Install packages
 if ls "${PACKAGES_DIR}"/*.rpm 1> /dev/null 2>&1; then
 	sudo rpm -Uvh --noscripts --replacepkgs --root "${ROOTDIR}"	\
