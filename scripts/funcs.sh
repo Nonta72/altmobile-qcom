@@ -92,13 +92,16 @@ extract_image() {
 
 # Make boot.img func
 make_boot_img() {
+	echo
+	echo "Building boot.img for aboot..."
 	local IMAGE_PATH DTB_PATH
 	IMAGE_PATH="$1/arch/arm64/boot/Image.gz"
 	DTB_PATH="$1/arch/arm64/boot/dts/qcom/${SOC}-${VENDOR}-${CODENAME}.dtb"
+	OUTPUT="${WORK_DIR}/boot.img"
 
 	mkbootimg \
-		--kernel ${IMAGE_PATH}		\
-		--dtb ${DTB_PATH}		\
+		--kernel "${IMAGE_PATH}"	\
+		--dtb "${DTB_PATH}"		\
 		--cmdline "${CMDLINE}"		\
 		--base 0x0			\
 		--kernel_offset 0x8000		\
@@ -106,8 +109,10 @@ make_boot_img() {
 		--tags_offset 0x100		\
 		--pagesize 4096			\
 		--header_version 2		\
-		-o ${WORK_DIR}/boot.img	\
+		-o "${OUTPUT}"	\
 		|| echo "Failed to make boot.img"
+
+	echo "bootimg for android bootloader build done: ${WORK_DIR}/boot.img"
 }
 
 # Git clone func

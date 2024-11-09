@@ -65,4 +65,4 @@ rpmbuild --target "${ARCH}" --define "_topdir ${FIRMWARE_PKG_DIR}" \
 			-bb "${FIRMWARE_PKG_DIR}/SPECS/${PKG_NAME}.spec"
 rm -f ${PACKAGES_DIR}/firmware-*.arm64.rpm
 cp "${FIRMWARE_PKG_DIR}/RPMS/"*/*.rpm "${PACKAGES_DIR}"
-echo "Firmware package build done."
+echo "Firmware package build done: $(ls -d ${PACKAGES_DIR}/firmware-*.rpm)"

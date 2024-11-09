@@ -46,4 +46,4 @@ fi
 echo "Unmounting the rootfs..."
 # Unmount the image
 sudo umount "${ROOTDIR}"
-echo "Rootfs build done."
+echo "Rootfs build done: $(ls -d "${WORK_DIR}/${EXTRACTED_IMAGE}")"

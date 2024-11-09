@@ -9,7 +9,7 @@ source "${SCRIPTS_DIR}/vars.sh"
 source "${SCRIPTS_DIR}/funcs.sh"
 
 echo
-echo "Building the kernel package..."
+echo "Building the kernel packages..."
 
 FOLDER_NAME="linux-${VENDOR}-${CODENAME}-git"
 KERNEL_OUTPUT="${BUILD_DIR}/${FOLDER_NAME}-output"
@@ -35,4 +35,4 @@ mkdir -p "${PACKAGES_DIR}"
 echo "Removing old kernel packages: $(ls -d ${PACKAGES_DIR}/kernel-*.rpm || true)"
 rm -f ${PACKAGES_DIR}/kernel-*.rpm
 cp "${KERNEL_OUTPUT}/rpmbuild/RPMS/"*/*.rpm "${PACKAGES_DIR}"
-echo "Kernel package build done."
+echo "Kernel packages build done: $(ls -d ${PACKAGES_DIR}/kernel-*.rpm)"
