@@ -57,7 +57,7 @@ remove_efi_part() {
 # Get ALT image function
 get_alt_image() {
 	local LATEST_IMAGE=$(curl -s "${ALT_URL}" | grep -oP	\
-	'alt-mobile-phosh-un-def-\d{8}-aarch64\.img\.xz'	\
+	'alt-mobile-phosh-def-\d{8}-aarch64\.img\.xz'	\
 	| sort -r | head -n 1)
 	EXTRACTED_IMAGE="${LATEST_IMAGE%.xz}"
 
