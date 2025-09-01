@@ -1,18 +1,18 @@
 #!/bin/bash
 # Device (e.g. Nothing Phone (1):sm7325-nothing-spacewar)
-DEVICE="devicename:soc-vendor-codename"
+DEVICE="Nothing Phone (1):sm7325-nothing-spacewar"
 ARCH="arm64"
 # Partition for rootfs (linux or userdata is recommended)
-PARTLABEL="linux"
+PARTLABEL="userdata"
 
 # Repositories and branches
 declare -A REPOS=(
-	["KERNEL"]="https://github.com/torvalds/linux master"
+	["KERNEL"]="https://github.com/mainlining/linux.git danila/spacewar-testing"
 	["FIRMWARE"]="https://github.com/quic/upstream-wifi-fw main"
 	["ALSAUCM"]="https://github.com/alsa-project/alsa-ucm-conf master"
 )
-DEFCONFIG="defconfig"
+DEFCONFIG="sc7280.config"
 CMDLINE="console=tty0 root=PARTLABEL=${PARTLABEL}"
 
 # Maintainer
-MAINTAINER="Alt Mobile <fix@me>"
+MAINTAINER="Alt Mobile <nont72@github.com>"
