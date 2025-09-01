@@ -8,10 +8,10 @@ PARTLABEL="userdata"
 # Repositories and branches
 declare -A REPOS=(
   ["KERNEL"]="https://github.com/mainlining/linux fekz115/spacewar"
-  ["FIRMWARE"]="https://github.com/quic/upstream-wifi-fw main"
-  ["ALSAUCM"]="https://github.com/alsa-project/alsa-ucm-conf master"
+  ["FIRMWARE"]="https://github.com/mainlining/firmware-nothing-spacewar master"
+  ["ALSAUCM"]="https://github.com/mainlining/alsa-ucm-conf spacewar/pong"
 )
-DEFCONFIG="sm7280_defconfig nothing-spacewar.config"
+DEFCONFIG="sc7280_defconfig nothing-spacewar.config"
 CMDLINE="console=tty0 root=PARTLABEL=${PARTLABEL}"
 
 # Maintainer
