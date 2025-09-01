@@ -41,7 +41,8 @@ mkdir -p %{buildroot}/lib/firmware
 tar xf %SOURCE0 -C %{buildroot}
 
 %files
-/*
+%defattr(-,root,root)
+/lib/firmware/*
 
 %changelog
 * $(LANG=C date +"%a %b %d %Y") ${MAINTAINER} - ${PKG_VERSION}-alt1
