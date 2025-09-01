@@ -11,7 +11,7 @@ declare -A REPOS=(
 	["FIRMWARE"]="https://github.com/quic/upstream-wifi-fw main"
 	["ALSAUCM"]="https://github.com/alsa-project/alsa-ucm-conf master"
 )
-DEFCONFIG="sc7280.config"
+DEFCONFIG="defconfig sc7280.config"
 CMDLINE="console=tty0 root=PARTLABEL=${PARTLABEL}"
 
 # Maintainer
