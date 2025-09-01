@@ -57,7 +57,7 @@ remove_efi_part() {
 # Get ALT image function
 get_alt_image() {
 	local LATEST_IMAGE=$(curl -s "${ALT_URL}" | grep -oP	\
-	'alt-mobile-phosh-def-\d{8}-aarch64\.img\.xz'	\
+	'alt-mobile-phosh-def-(latest|\d{8})-aarch64\.img\.xz'	\
 	| sort -r | head -n 1)
 	EXTRACTED_IMAGE="${LATEST_IMAGE%.xz}"
 
@@ -85,9 +85,10 @@ get_alt_image() {
 }
 
 extract_image() {
-	echo "Starting extraction: '$1'"
-	unxz "$1" || { echo "Extraction failed"; exit 1; }
-	echo "Extraction completed: ${LATEST_IMAGE%.xz}"
+	local IMAGE_FILE="$1"
+	echo "Starting extraction: '${WORK_DIR}/${IMAGE_FILE}'"
+	unxz "${WORK_DIR}/${IMAGE_FILE}" || { echo "Extraction failed"; exit 1; }
+	echo "Extraction completed: ${IMAGE_FILE%.xz}"
 }
 
 # Make boot.img func
