@@ -85,10 +85,9 @@ get_alt_image() {
 }
 
 extract_image() {
-	local IMAGE_FILE="$1"
-	echo "Starting extraction: '${WORK_DIR}/${IMAGE_FILE}'"
-	unxz "${WORK_DIR}/${IMAGE_FILE}" || { echo "Extraction failed"; exit 1; }
-	echo "Extraction completed: ${IMAGE_FILE%.xz}"
+	echo "Starting extraction: '$1'"
+	unxz "$1" || { echo "Extraction failed"; exit 1; }
+	echo "Extraction completed: ${LATEST_IMAGE%.xz}"
 }
 
 # Make boot.img func
