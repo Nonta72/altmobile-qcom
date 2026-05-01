@@ -95,7 +95,7 @@ make_boot_img() {
 	echo
 	echo "Building boot.img for aboot..."
 	local IMAGE_PATH DTB_PATH
-	IMAGE_PATH="$1/arch/arm64/boot/Image.gz"
+	IMAGE_PATH="$1/arch/arm64/boot/Image"
 	DTB_PATH="$1/arch/arm64/boot/dts/qcom/${SOC}-${VENDOR}-${CODENAME}.dtb"
 	OUTPUT="${WORK_DIR}/boot.img"
 
