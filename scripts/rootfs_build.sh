@@ -23,6 +23,11 @@ sudo mount "${WORK_DIR}/${EXTRACTED_IMAGE}" "${ROOTDIR}" \
 			|| echo "Failed to mount ${EXTRACTED_IMAGE} image"
 
 # Replace fstab
+
+# Copy the existing fstab
+sudo mkdir -p ${CACHE_DIR}/rootdir/etc
+sudo cp src/fstab ${CACHE_DIR}/rootdir/etc/
+
 PARTLABEL="${PARTLABEL}" envsubst < "${SRC_DIR}/fstab" \
 			| sudo tee "${ROOTDIR}/etc/fstab" > /dev/null \
 			|| echo "Failed to replace /etc/fstab"
@@ -30,6 +35,9 @@ PARTLABEL="${PARTLABEL}" envsubst < "${SRC_DIR}/fstab" \
 # Install a custom ALSA Use Case Manager configuration
 FOLDER_NAME="alsa-${VENDOR}-${CODENAME}-git"
 git_clone "ALSAUCM" "${CACHE_DIR}/${FOLDER_NAME}"
+
+# Create alsa dir
+sudo mkdir -p ${ROOTDIR}/usr/share/alsa
 
 sudo cp -r "${CACHE_DIR}/${FOLDER_NAME}"/{ucm,ucm2} "${ROOTDIR}/usr/share/alsa"
 
