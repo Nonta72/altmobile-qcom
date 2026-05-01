@@ -7,11 +7,11 @@ PARTLABEL="userdata"
 
 # Repositories and branches
 declare -A REPOS=(
-  ["KERNEL"]="https://github.com/mainlining/linux fekz115/spacewar"
+  ["KERNEL"]="https://github.com/Nonta72/linux sc7280-6.19.y"
   ["FIRMWARE"]="https://github.com/mainlining/firmware-nothing-spacewar master"
   ["ALSAUCM"]="https://github.com/mainlining/alsa-ucm-conf spacewar/pong"
 )
-DEFCONFIG="sc7280_defconfig nothing-spacewar.config"
+DEFCONFIG="spacewar_defconfig"
 CMDLINE="console=tty0 root=PARTLABEL=${PARTLABEL}"
 
 # Maintainer
